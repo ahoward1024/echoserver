@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: exec-pod
+spec:
+  containers:
+  - name: exec-pod
+    image: alpine:latest
+    ports:
+    - containerPort: 80
+    command:
+      - 'sh'
+      - '-c'
+      - 'apk update && apk add ripgrep fd redis aws-cli jq && sleep infinity'
