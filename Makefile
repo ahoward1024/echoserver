@@ -23,7 +23,7 @@ install:
 
 .PHONY: begin
 ## Install all dependencies and create the cluster, installing all of the infrastructure.
-begin: install create kustomize
+begin: install create kustomize up
 
 .PHONY: create
 ## Creates the cluster and adds the baseline resources.
@@ -63,44 +63,41 @@ exec:
 	kubectl --namespace default exec --stdin=true --tty=true pod/exec-pod -- sh
 
 .PHONY: watch
+## Run gow to restart the server on file saves.
 watch:
-## Run gow to restart the server on file saves
+	go install github.com/mitranim/gow@latest
 	gow run main.go
 
-build:
 ## Build the server for the current architecture
+build:
 	mkdir -p build
 	go build -o build/echoserver
 
-build-linux:
 ## Build the server for the linux architecture
+build-linux:
 	mkdir -p build/linux
 	GOOS=linux GOARCH=amd64 go build -o build/linux/echoserver
 
 .PHONY: build-docker
-build-docker:
 ## Build a Docker image of the server
+build-docker:
 	docker build --tag echoserver:${DOCKER_TAG_VERSION} .
 
 .PHONY: run
-run: build-docker
 ## Run the application in a container
+run: build-docker
 	docker run --rm --publish 127.0.0.1:8080:8080 --name echoserver echoserver:${DOCKER_TAG_VERSION}
 
 
 # Help
 # COLORS
-GREEN  := $(shell tput -Txterm setaf 2)
-YELLOW := $(shell tput -Txterm setaf 3)
-WHITE  := $(shell tput -Txterm setaf 7)
-RESET  := $(shell tput -Txterm sgr0)
-TARGET_MAX_CHAR_NUM=20
+__TARGET_MAX_CHAR_NUM=20
 .PHONY: help
 ## Show help
 help:
 	@echo ''
 	@echo 'Usage:'
-	@echo '  ${YELLOW}make${RESET} ${GREEN}<target>${RESET}'
+	@echo '  make <target>'
 	@echo ''
 	@echo 'Targets:'
 	@awk '/^[a-zA-Z\-\_0-9]+:/ { \
@@ -108,8 +105,7 @@ help:
 		if (helpMessage) { \
 			helpCommand = substr($$1, 0, index($$1, ":")-1); \
 			helpMessage = substr(lastLine, RSTART + 3, RLENGTH); \
-			printf "  ${YELLOW}%-$(TARGET_MAX_CHAR_NUM)s${RESET} ${GREEN}%s${RESET}\n", helpCommand, helpMessage; \
+			printf "  %-$(__TARGET_MAX_CHAR_NUM)s %s\n", helpCommand, helpMessage; \
 		} \
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
-

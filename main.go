@@ -1,11 +1,7 @@
 package main
 
-import (
-	"echoserver/cmd"
-	"fmt"
-)
+import "echoserver/cmd"
 
 func main() {
-	fmt.Println("Hi!")
 	cmd.Execute()
 }

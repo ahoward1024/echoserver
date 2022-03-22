@@ -36,25 +36,25 @@ type Options struct {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Debug().Msg(fmt.Sprintf("Started request to %s", r.RequestURI))
+		log.Debug().Msgf("Started request to %s", r.RequestURI)
 		next.ServeHTTP(w, r)
-		log.Debug().Msg(fmt.Sprintf("Finished request to %s", r.RequestURI))
+		log.Debug().Msgf("Finished request to %s", r.RequestURI)
 	})
 }
 
-func serverShutdown(server *Server, ctx context.Context) {
-	log.Info().Msg(fmt.Sprintf("%s server shutting down", server.Name))
-	if err := server.Shutdown(ctx); err != nil {
-		log.Error().Msg(fmt.Sprintf("%s server shutdown unsuccessful: %v", server.Name, err))
+func serverStartup(server *Server) {
+	log.Info().Msgf("%s server startup: %s", server.Name, server.Addr)
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		log.Fatal().Msgf("%s server startup unsuccessful: %v", server.Name, err)
 	}
-	log.Info().Msg(fmt.Sprintf("%s server shut down successfully", server.Name))
 }
 
-func serverStartup(server *Server) {
-	log.Info().Msg(fmt.Sprintf("%s server startup", server.Name))
-	if err := server.ListenAndServe(); err != http.ErrServerClosed {
-		log.Fatal().Msg(fmt.Sprintf("%s server startup unsuccessful: %v", server.Name, err))
+func serverShutdown(server *Server, ctx context.Context) {
+	log.Info().Msgf("%s server shutting down: %s", server.Name, server.Addr)
+	if err := server.Shutdown(ctx); err != nil {
+		log.Error().Msgf("%s server shutdown unsuccessful: %v", server.Name, err)
 	}
+	log.Info().Msgf("%s server shut down successfully", server.Name)
 }
 
 func RunServer(opts *Options) error {
@@ -62,7 +62,7 @@ func RunServer(opts *Options) error {
 	path := opts.LivenessFilePath
 	livenessFile, err := os.Create(path)
 	if err != nil {
-		log.Error().Msg(fmt.Sprintf("Failed to create liveness file: %s", err))
+		log.Error().Msgf("Failed to create liveness file: %s", err)
 		return fmt.Errorf("Failed to create liveness file: %s", err)
 	}
 

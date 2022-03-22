@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -35,16 +36,25 @@ code and information you send it. This is useful for testing infrastructure.`,
 		readTimeout, err := cmd.Flags().GetInt("read-timeout")
 		idleTimeout, err := cmd.Flags().GetInt("idle-timeout")
 		livenessPath, err := cmd.Flags().GetString("liveness-path")
+		logLevel, err := cmd.Flags().GetString("log-level")
 		if err != nil {
-			log.Error().Msg(fmt.Sprintf("Could not get options: %s", err))
+			log.Error().Msgf("Could not get options: %s", err)
 			os.Exit(1)
+		}
+
+		if logLevel == "info" {
+			zerolog.SetGlobalLevel(zerolog.InfoLevel)
+		} else if logLevel == "debug" {
+			zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		} else if logLevel == "trace" {
+			zerolog.SetGlobalLevel(zerolog.TraceLevel)
 		}
 
 		if banner == true {
 			fmt.Println(bannerText)
 		}
 
-		err = server.RunServer(&server.Options{
+		opts := &server.Options{
 			LivenessFilePath: livenessPath,
 			Host:             host,
 			Port:             port,
@@ -53,7 +63,10 @@ code and information you send it. This is useful for testing infrastructure.`,
 			WriteTimeout:     writeTimeout,
 			ReadTimeout:      readTimeout,
 			IdleTimeout:      idleTimeout,
-		})
+		}
+		log.Trace().Msgf("Server options: %v", opts)
+
+		err = server.RunServer(opts)
 
 		if err != nil {
 			log.Fatal().Msg("Error shutting down server")
@@ -75,8 +88,9 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.echo.yaml)")
+	rootCmd.Flags().String("log-level", "info", "Logging level. Valid choices are 'info', 'debug', and 'trace'.")
 	rootCmd.Flags().String("liveness-path", "/tmp/echoserver-live", "Path to put the liveness file.")
-	rootCmd.Flags().Bool("banner", true, "Start without the banner.")
+	rootCmd.Flags().Bool("banner", true, "Print the banner on server start.")
 	rootCmd.Flags().String("host", "localhost", "The host to run the server on.")
 	rootCmd.Flags().Int("port", 8080, "The port to run the server on.")
 	rootCmd.Flags().Int("metrics-port", 9000, "The metrics port to run the server on. This can be the same as the host port, but is set to a separate port by default for security.")

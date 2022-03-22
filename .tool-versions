@@ -1,2 +1,4 @@
 golang 1.17.7
+k3d 5.3.0
 tilt 0.25.1
+kubectl 1.23.5

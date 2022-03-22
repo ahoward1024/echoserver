@@ -21,6 +21,7 @@ spec:
             - --banner=false
             - --host=0.0.0.0
             - --liveness-path=/build/linux/echoserver-live
+            - --log-level=debug
           ports:
             - containerPort: 8080
       livenessProbe:
@@ -34,7 +35,6 @@ spec:
         httpGet:
           path: /health
           port: 8080
-
 ---
 apiVersion: v1
 kind: Service

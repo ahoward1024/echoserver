@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"fmt"
 	"os"
 
 	"github.com/rs/zerolog/log"
@@ -26,7 +25,7 @@ var liveCmd = &cobra.Command{
 			log.Warn().Msg("Liveness file does not exist")
 			os.Exit(1)
 		} else {
-			log.Error().Msg(fmt.Sprintf("Liveness file is in a super-position: %v", err))
+			log.Error().Msgf("Liveness file is in a super-position: %v", err)
 			os.Exit(1)
 		}
 	},
