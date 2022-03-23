@@ -1,0 +1,32 @@
+name: Docker image release
+on:
+  release:
+    branches:
+      - main
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: |
+            ahoward1024/echoserver
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ahoward1024/echoserver:latest

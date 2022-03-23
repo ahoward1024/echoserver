@@ -16,6 +16,31 @@ and the [gorilla/mux](https://github.com/gorilla/mux) libraries.
 
 ## Getting started
 
+## make commands
+
+```
+Usage:
+  make <target>
+
+Targets:
+  uninstall            Delete all of the plugins/tools versions of the asdf apps. Mainly for testing if install works.
+  install              Install all plugins/tool versions of asdf apps.
+  begin                Install all dependencies and create the cluster, installing all of the infrastructure.
+  create               Creates the cluster and adds the baseline resources.
+  kustomize            Install Kustomize files.
+  destroy              WARNING: Destroys the cluster entirely!
+  start                Starts the cluster from suspension. The cluster must be created first before this can work.
+  stop                 Stops the cluster, putting into suspension. The cluster must have been created and running for this to work.
+  up                   Start the Tilt server.
+  exec                 Exec into a pod in the cluster for testing purposes.
+  watch                Run gow to restart the server on file saves.
+  build                Build the server for the current architecture
+  build-linux          Build the server for the linux architecture
+  build-docker         Build a Docker image of the server
+  run                  Run the application in a container
+  help                 Show help
+```
+
 **Dependencies**:
 - [go 1.17](https://go.dev/) (Required)
 
@@ -118,29 +143,4 @@ Which is the same as:
 $ kubectl --namespace default exec --stdin=true --tty=true pod/exec-pod -- sh
 ```
 
-![make exec](./docs/readme/make-exec.png)
-
-## make commands
-
-```
-Usage:
-  make <target>
-
-Targets:
-  uninstall            Delete all of the plugins/tools versions of the asdf apps. Mainly for testing if install works.
-  install              Install all plugins/tool versions of asdf apps.
-  begin                Install all dependencies and create the cluster, installing all of the infrastructure.
-  create               Creates the cluster and adds the baseline resources.
-  kustomize            Install Kustomize files.
-  destroy              WARNING: Destroys the cluster entirely!
-  start                Starts the cluster from suspension. The cluster must be created first before this can work.
-  stop                 Stops the cluster, putting into suspension. The cluster must have been created and running for this to work.
-  up                   Start the Tilt server.
-  exec                 Exec into a pod in the cluster for testing purposes.
-  watch                Run gow to restart the server on file saves.
-  build                Build the server for the current architecture
-  build-linux          Build the server for the linux architecture
-  build-docker         Build a Docker image of the server
-  run                  Run the application in a container
-  help                 Show help
-```
+![make exec](./docs/readme/make-exec.svg)
