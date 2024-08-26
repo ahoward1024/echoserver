@@ -15,7 +15,6 @@ var liveCmd = &cobra.Command{
 		path, err := cmd.Flags().GetString("liveness-path")
 		if err != nil {
 			log.Fatal().Msg("Could not get liveness-path flag")
-			os.Exit(1)
 		}
 
 		if _, err := os.Stat(path); err == nil {
@@ -25,8 +24,7 @@ var liveCmd = &cobra.Command{
 			log.Warn().Msg("Liveness file does not exist")
 			os.Exit(1)
 		} else {
-			log.Error().Msgf("Liveness file is in a super-position: %v", err)
-			os.Exit(1)
+			log.Fatal().Msgf("Liveness file is in a super-position: %v", err)
 		}
 	},
 }

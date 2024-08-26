@@ -37,7 +37,7 @@ kustomize:
 		kubectl apply --kustomize ./infrastructure/local/kustomize/$${directory}; \
 	done
 
-.PHONY: delete
+.PHONY: destroy
 ## WARNING: Destroys the cluster entirely!
 destroy:
 	k3d cluster delete --config ./k3d-config.yaml
