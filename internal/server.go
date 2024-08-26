@@ -63,7 +63,7 @@ func RunServer(opts *Options) error {
 	livenessFile, err := os.Create(path)
 	if err != nil {
 		log.Error().Msgf("Failed to create liveness file: %s", err)
-		return fmt.Errorf("Failed to create liveness file: %s", err)
+		return fmt.Errorf("failed to create liveness file: %s", err)
 	}
 
 	// Setup the channel for blocking

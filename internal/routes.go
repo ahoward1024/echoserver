@@ -27,7 +27,7 @@ func getStatus(r *http.Request) (response Status, err error) {
 	status.Code, err = strconv.Atoi(code)
 	if err != nil {
 		log.Error().Msg("Error converting http status code string to integer")
-		return status, errors.New("String to int conversion error")
+		return status, errors.New("string to int conversion error")
 	}
 	status.Text = http.StatusText(status.Code)
 
@@ -61,13 +61,13 @@ func handleHealthcheck(w http.ResponseWriter, r *http.Request) {
 
 func handlePing(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, fmt.Sprintf("pong"))
+	io.WriteString(w, "pong")
 }
 
 func handleSync(w http.ResponseWriter, r *http.Request) {
 	time.Sleep(time.Second * 5)
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, fmt.Sprintf("completed"))
+	io.WriteString(w, "completed")
 }
 
 func handleSyncSleep(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +80,7 @@ func handleSyncSleep(w http.ResponseWriter, r *http.Request) {
 	} else {
 		time.Sleep(time.Second * time.Duration(sleep))
 		w.WriteHeader(http.StatusOK)
-		io.WriteString(w, fmt.Sprintf("completed"))
+		io.WriteString(w, "completed")
 	}
 }
 
@@ -88,7 +88,13 @@ func handleFavicon(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
 }
 
+func handleRoot(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	io.WriteString(w, BannerText)
+}
+
 func AddRoutes(router *mux.Router) {
+	router.HandleFunc("/", handleRoot)
 	router.HandleFunc("/health", handleHealthcheck)
 	router.HandleFunc("/ping", handlePing)
 

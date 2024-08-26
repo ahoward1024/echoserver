@@ -13,45 +13,76 @@ import (
 
 var cfgFile string
 
-var bannerText string = `
-                       _/
-    _/_/      _/_/_/  _/_/_/      _/_/      _/_/_/    _/_/    _/  _/_/  _/      _/    _/_/    _/  _/_/
- _/_/_/_/  _/        _/    _/  _/    _/  _/_/      _/_/_/_/  _/_/      _/      _/  _/_/_/_/  _/_/
-_/        _/        _/    _/  _/    _/      _/_/  _/        _/          _/  _/    _/        _/
- _/_/_/    _/_/_/  _/    _/    _/_/    _/_/_/      _/_/_/  _/            _/        _/_/_/  _/
-`
-
 var rootCmd = &cobra.Command{
 	Use:   "echoserver",
 	Short: "An HTTP echo server implementation in Go",
 	Long: `An HTTP echo server implementation in Go. This will echo back to you the status
 code and information you send it. This is useful for testing infrastructure.`,
 	Run: func(cmd *cobra.Command, args []string) {
+
 		banner, err := cmd.Flags().GetBool("banner")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		host, err := cmd.Flags().GetString("host")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		port, err := cmd.Flags().GetInt("port")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		metricsPort, err := cmd.Flags().GetInt("metrics-port")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		wait, err := cmd.Flags().GetInt("wait")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		writeTimeout, err := cmd.Flags().GetInt("write-timeout")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		readTimeout, err := cmd.Flags().GetInt("read-timeout")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		idleTimeout, err := cmd.Flags().GetInt("idle-timeout")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		livenessPath, err := cmd.Flags().GetString("liveness-path")
+		if err != nil {
+			log.Fatal().Msgf("Could not get options: %s", err)
+		}
+
 		logLevel, err := cmd.Flags().GetString("log-level")
 		if err != nil {
-			log.Error().Msgf("Could not get options: %s", err)
-			os.Exit(1)
+			log.Fatal().Msgf("Could not get options: %s", err)
 		}
 
-		if logLevel == "info" {
+		switch logLevel {
+		case "info":
 			zerolog.SetGlobalLevel(zerolog.InfoLevel)
-		} else if logLevel == "debug" {
+		case "debug":
 			zerolog.SetGlobalLevel(zerolog.DebugLevel)
-		} else if logLevel == "trace" {
+		case "trace":
 			zerolog.SetGlobalLevel(zerolog.TraceLevel)
+		default:
+			log.Fatal().Msgf("Error: unknown log level %s", logLevel)
 		}
 
-		if banner == true {
-			fmt.Println(bannerText)
+		if banner {
+			fmt.Print(server.BannerText)
 		}
 
 		opts := &server.Options{
@@ -70,7 +101,6 @@ code and information you send it. This is useful for testing infrastructure.`,
 
 		if err != nil {
 			log.Fatal().Msg("Error shutting down server")
-			os.Exit(1)
 		}
 
 		os.Exit(0)
